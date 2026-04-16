@@ -1,0 +1,32 @@
+<script>
+// 修复跨文档标题锚点导航
+(function() {
+  // 监听文档切换后滚动到目标标题
+  function scrollToHash(hash) {
+    if (!hash) return;
+    const id = decodeURIComponent(hash.slice(1));
+    const target = document.getElementById(id);
+    if (target) {
+      setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }
+
+  // 拦截所有内部链接点击
+  document.addEventListener('click', function(e) {
+    const a = e.target.closest('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href || href.startsWith('http')) return;
+    const hashIdx = href.indexOf('#');
+    if (hashIdx === -1) return;
+    const hash = href.slice(hashIdx);
+    // 等插件完成页面切换后再滚动
+    setTimeout(() => scrollToHash(hash), 300);
+  });
+
+  // 处理初始加载时 URL 中已有的 hash
+  if (window.location.hash) {
+    window.addEventListener('load', () => scrollToHash(window.location.hash));
+  }
+})();
+</script>
